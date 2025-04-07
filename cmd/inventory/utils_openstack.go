@@ -29,8 +29,6 @@ var errNoAuthEndpoint = errors.New("no authentication endpoint specified")
 var errNoDomain = errors.New("no domain specified")
 var errNoRegion = errors.New("no region specified")
 var errNoProject = errors.New("no project specified")
-var errNoCredentialGroup = errors.New("no credential group specified")
-var errUnknownCredentialGroup = errors.New("unknown credential group")
 
 // validateOpenStackConfig validates the OpenStack configuration settings.
 func validateOpenStackConfig(conf *config.Config) error {
@@ -45,9 +43,8 @@ func validateOpenStackConfig(conf *config.Config) error {
 
 	for service, serviceCredentials := range services {
 		credentials := serviceCredentials.UseCredentials
-		credentialGroups := serviceCredentials.UseCredentialGroups
 
-		if len(credentials) == 0 && len(credentialGroups) == 0 {
+		if len(credentials) == 0 {
 			continue
 		}
 
@@ -59,29 +56,6 @@ func validateOpenStackConfig(conf *config.Config) error {
 
 			if _, ok := conf.OpenStack.Credentials[cred]; !ok {
 				return fmt.Errorf("OpenStack: %w: service %s refers to %s", errUnknownNamedCredentials, service, cred)
-			}
-		}
-
-		// validate that the credential groups are defined
-		for _, groupName := range credentialGroups {
-			if groupName == "" {
-				return fmt.Errorf("OpenStack: %w: %s", errNoCredentialGroup, service)
-			}
-
-			group, ok := conf.OpenStack.CredentialGroups[groupName]
-
-			if !ok {
-				return fmt.Errorf("OpenStack: %w: service %s refers to %s", errUnknownCredentialGroup, service, groupName)
-			}
-
-			for _, cred := range group {
-				if cred == "" {
-					return fmt.Errorf("OpenStack: %w: %s", errNoServiceCredentials, service)
-				}
-
-				if _, ok := conf.OpenStack.Credentials[cred]; !ok {
-					return fmt.Errorf("OpenStack: %w: service %s refers to %s in group %s", errUnknownNamedCredentials, service, cred, groupName)
-				}
 			}
 		}
 
@@ -238,15 +212,6 @@ func configureClientset(
 
 	for _, credName := range serviceConfig.UseCredentials {
 		credentialNames[credName] = struct{}{}
-	}
-
-	for _, groupName := range serviceConfig.UseCredentialGroups {
-		credentialGroup := conf.OpenStack.CredentialGroups[groupName]
-
-		for _, credName := range credentialGroup {
-			// overwrite entries from UseCredentials if we have to.
-			credentialNames[credName] = struct{}{}
-		}
 	}
 
 	for credentials := range credentialNames {

@@ -136,11 +136,6 @@ type OpenStackConfig struct {
 	// Credentials specifies the OpenStack named credentials configuration,
 	// which is used by the various OpenStack services.
 	Credentials map[string]OpenStackCredentialsConfig `yaml:"credentials"`
-
-	// CredentialGroups specifies groups of credentials, useful for using a
-	// set of credentials when configuring a service, instead of repeating all
-	// of them.
-	CredentialGroups map[string][]string `yaml:"credential_groups"`
 }
 
 // OpenStackServices repsesents the known OpenStack services and their config.
@@ -165,9 +160,6 @@ type OpenStackServices struct {
 type OpenStackServiceCredentials struct {
 	// UseCredentials specifies a list of named credentials to use.
 	UseCredentials []string `yaml:"use_credentials"`
-
-	// UseCredentialGroups specifies a list of credential groups to use.
-	UseCredentialGroups []string `yaml:"use_credential_groups"`
 }
 
 // OpenStackCredentialsConfig provides named credentials configuration for the OpenStack

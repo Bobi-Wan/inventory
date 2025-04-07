@@ -302,40 +302,27 @@ openstack:
       app_credentials:
         app_credentials_id: "<app-id>"
         app_credentials_secret_file: "<path-to-secret-file>"
-  credential_groups:
-    app_credentials:
-      - sa1
-      - sa2
   services:
     # Used for collecting OpenStack Servers
     compute:
       use_credentials: 
         - local
-      use_credential_groups:
-        - app_credentials
+        - sa1
     # Used for collecting OpenStack Networks and Subnets
     network:
       use_credentials: 
         - local
-      use_credential_groups:
-        - app_credentials
     block_storage:
       use_credentials: 
         - local
-      use_credential_groups:
-        - app_credentials
     # Used for collecting OpenStack LoadBalancers
     load_balancer:
       use_credentials: 
         - local
-      use_credential_groups:
-        - app_credentials
     # Used for collecting OpenStack Project metadata
     identity:
       use_credentials: 
         - local
-      use_credential_groups:
-        - app_credentials
 
 # Scheduler configuration
 scheduler:
